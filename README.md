@@ -22,7 +22,7 @@
 
 ```json
 {
-{ "Mobile:
+{ "Mobile":
     "filtered":{
         "mean": 12.1,
         "values": [123, 31, 10, 12, 123]
