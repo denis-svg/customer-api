@@ -7,7 +7,7 @@ from statistics import mean
 statistic = Blueprint('statistics', __name__)
 
 @statistic.route('/api/statistics/clicks/<event>/device/<timestamp>')
-@cache.cached(timeout=1000, query_string=True)
+@cache.cached(timeout=100000, query_string=True)
 def statisticsClicksDeviceView(event: str, timestamp: str):
     if request.method == 'GET':
         available_events = ["Convert", "Share"]
@@ -85,7 +85,7 @@ def statisticsClicksDeviceView(event: str, timestamp: str):
         return jsonify(out)
 
 @statistic.route('/api/statistics/clicks/<event>/locale/<timestamp>')
-@cache.cached(timeout=1000, query_string=True)
+@cache.cached(timeout=100000, query_string=True)
 def statisticsClicksLocaleView(event: str, timestamp: str):
     if request.method == 'GET':
         available_events = ["Convert", "Share"]
@@ -167,7 +167,7 @@ def statisticsClicksLocaleView(event: str, timestamp: str):
         return jsonify(out)
 
 @statistic.route('/api/statistics/time/<event>/device/<timestamp>')
-@cache.cached(timeout=1000, query_string=True)
+@cache.cached(timeout=100000, query_string=True)
 def statisticsTimeDeviceView(event: str, timestamp: str):
     if request.method == 'GET':
         available_events = ["Convert", "Share"]
@@ -249,7 +249,7 @@ def statisticsTimeDeviceView(event: str, timestamp: str):
         return jsonify(out)
 
 @statistic.route('/api/statistics/time/<event>/locale/<timestamp>')
-@cache.cached(timeout=1000, query_string=True)
+@cache.cached(timeout=100000, query_string=True)
 def statisticsTimeLocaleView(event: str, timestamp: str):
     if request.method == 'GET':
         available_events = ["Convert", "Share"]
