@@ -22,13 +22,16 @@
 
 ```json
 {
-"filtered":{
-    "mean": 12.1,
-    "values": [123, 31, 10, 12, 123]
-}
-"notFiltered":
-    "mean": 11.1,
-    "values": [32, 31, 10, 12, 32]
+{ "Mobile:
+    "filtered":{
+        "mean": 12.1,
+        "values": [123, 31, 10, 12, 123]
+        }
+    "notFiltered":{
+        "mean": 11.1,
+        "values": [32, 31, 10, 12, 32]
+        }
+   "Desktop": '....'
 }
 ```
 #### You can plot filtered and notFiltered values in the same graph
