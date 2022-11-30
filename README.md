@@ -13,10 +13,10 @@
 #### python loader.py
 
 ### Statistics endpoints
-#### /api/statistics/clicks/'<event>'/device/'<timestamp>'
-#### /api/statistics/clicks/'<event>'/locale/'<timestamp>'
-#### /api/statistics/time/'<event>'/device/'<timestamp>'
-#### /api/statistics/time/'<event>'/locale/'<timestamp>'
+#### /api/statistics/clicks/event/device/timestamp
+#### /api/statistics/clicks/event/locale/timestamp
+#### /api/statistics/time/event/device/timestamp
+#### /api/statistics/time/event/locale/timestamp
 #### event = ['share', 'convert']
 #### timestamp = ['lastday', 'thisweek', 'thismonth']
 
