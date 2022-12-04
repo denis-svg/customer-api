@@ -1,5 +1,5 @@
 import requests
-# import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 
 URL = "http://127.0.0.1:5000"
 
@@ -53,3 +53,4 @@ def plotStatistics():
 
 
 loadStatistics()
+plotStatistics()
