@@ -57,7 +57,7 @@
 
 ```json
 {
-    "Mobile" : [{"period": "12AM", value:12}, {"period": "8AM", value:13}]
-    "Desktop" : [{"period": "12AM", value:12}, {"period": "8AM", value:13}]
+    "Mobile" : [{"period": "12AM", "value":12}, {"period": "8AM", "value":13}]
+    "Desktop" : [{"period": "12AM", "value":12}, {"period": "8AM", "value":13}]
 }
 ```
