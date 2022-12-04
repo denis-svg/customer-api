@@ -162,3 +162,105 @@ def getAverageMetric(metric: str):
 
     return jsonify(list(map(lambda x: {"period": x[1], "value": x[0]}, res)))
 
+
+@metrics.route('/api/metrics/urls/top-pages', methods=['GET'])
+@cache.cached(timeout=1000, query_string=True)
+def metricsUrls():
+    if request.method == 'GET':
+        n = request.args.get("n")
+
+        cnxn = getConnection()
+        cursor = cnxn.cursor()
+
+        pages = cursor.execute(f"""SELECT   urL,
+											unique_clicks,
+											total_clicks,
+											timeOnPage,
+											timeOnPage_filtered,
+											pageBeforeConversion,
+											pageBeforeShare
+									FROM Urls
+									WHERE ratio_clicks < 1 AND ratio_time < (SELECT TOP(1)
+									                                                ratio_time
+									                                        FROM Urls
+									                                        WHERE ratio_time IN (SELECT TOP(50) PERCENT
+									                                                                    ratio_time
+									                                                            FROM Urls
+									                                                            WHERE ratio_clicks < 1 AND ratio_time IS NOT NULL
+									                                                            ORDER BY ratio_time)
+									                                        ORDER BY ratio_time DESC)
+									ORDER BY total_clicks DESC""").fetchall()
+
+        out = []
+        if n is None:
+            for page in pages:
+                out.append({"url": page[0],
+                            "uniqueClicks": page[1],
+                            "totalClicks": page[2],
+                            "timeOnPageAvg": page[3],
+                            "timeOnPageFilteredAvg": page[4],
+                            "pageBeforeConversion": page[5],
+                            "pageBeforeShare": page[6]})
+        else:
+            for page in pages[0:int(n)]:
+                out.append({"url": page[0],
+                            "uniqueClicks": page[1],
+                            "totalClicks": page[2],
+                            "timeOnPageAvg": page[3],
+                            "timeOnPageFilteredAvg": page[4],
+                            "pageBeforeConversion": page[5],
+                            "pageBeforeShare": page[6]})
+        cnxn.close()
+        return jsonify(out)
+
+
+@metrics.route('/api/metrics/urls/top-products', methods=['GET'])
+@cache.cached(timeout=1000, query_string=True)
+def metricsProducts():
+    if request.method == 'GET':
+        n = request.args.get("n")
+
+        cnxn = getConnection()
+        cursor = cnxn.cursor()
+
+        pages = cursor.execute(f"""SELECT urL,
+											unique_clicks,
+											total_clicks,
+											timeOnPage,
+											timeOnPage_filtered,
+											pageBeforeConversion,
+											pageBeforeShare
+									FROM Urls
+									WHERE ratio_clicks < 1 AND urL LIKE '%.html'  AND ratio_time < (SELECT TOP(1)
+									                                                ratio_time
+									                                        FROM Urls
+									                                        WHERE ratio_time IN (SELECT TOP(50) PERCENT
+									                                                                    ratio_time
+									                                                            FROM Urls
+									                                                            WHERE ratio_clicks < 1 AND ratio_time IS NOT NULL AND urL LIKE '%.html' 
+									                                                            ORDER BY ratio_time)
+									                                        ORDER BY ratio_time DESC)
+									ORDER BY total_clicks DESC""").fetchall()
+
+        out = []
+        if n is None:
+            for page in pages:
+                out.append({"url": page[0],
+                            "uniqueClicks": page[1],
+                            "totalClicks": page[2],
+                            "timeOnPageAvg": page[3],
+                            "timeOnPageFilteredAvg": page[4],
+                            "pageBeforeConversion": page[5],
+                            "pageBeforeShare": page[6]})
+        else:
+            for page in pages[0:int(n)]:
+                out.append({"url": page[0],
+                            "uniqueClicks": page[1],
+                            "totalClicks": page[2],
+                            "timeOnPageAvg": page[3],
+                            "timeOnPageFilteredAvg": page[4],
+                            "pageBeforeConversion": page[5],
+                            "pageBeforeShare": page[6]})
+        cnxn.close()
+        return jsonify(out)
+
