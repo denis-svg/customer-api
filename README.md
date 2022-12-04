@@ -51,6 +51,7 @@
 
 ### Metrics endpoints
 #### /api/metrics/<click_type>/device
+#### /api/metrics/<click_type>/locale
 #### click_type = [totalClicks, totalConversions, totalShares]
 #### ?timeframe= [day, week, month] default is day
 #### Example /api/metrics/totalClicks/device?timeframe=day
