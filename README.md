@@ -47,3 +47,17 @@
 #### You can plot filtered and notFiltered values in the same graph
 #### Example
 ![image](https://user-images.githubusercontent.com/64483300/204863439-833b2ef0-cabc-48e3-ab3c-dd4c0aa1f25b.png)
+
+
+### Metrics endpoints
+#### /api/metrics/<click_type>/device
+#### click_type = [totalClicks, totalConversions, totalShares]
+#### ?timeframe= [day, week, month] default is day
+#### Example /api/metrics/totalClicks/device?timeframe=day
+
+```json
+{
+    "Mobile" : [{"period": "12AM", value:12}, {"period": "8AM", value:13}]
+    "Desktop" : [{"period": "12AM", value:12}, {"period": "8AM", value:13}]
+}
+```
