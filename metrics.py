@@ -11,9 +11,21 @@ metrics = Blueprint('metrics', __name__)
 def metricUserFlow():
     pass
 
-@metrics.route("/api/metrics/totalClicks", methods=["GET"])
+@metrics.route("/api/metrics/<click_type>/device", methods=["GET"])
 @cache.cached(timeout=1000, query_string=True)
-def getTotalClicks():
+def getTotalClicks(click_type: str):
+    available_click_type = ["totalClicks", "totalConversions", "totalShares"]
+    if click_type not in available_click_type:
+        return "Invalid click type", 400
+    
+    event = None
+    if click_type == 'totalConversions':
+        event = 'conversion'
+    elif click_type == 'totalShares':
+        event = "share_experience"
+    else:
+        event = "total"
+
     timeframe = request.args.get("timeframe").lower(
     ) if request.args.get("timeframe") is not None else "day"
     timeframe = timeframe if timeframe in ["day", "week", "month"] else "day"
@@ -24,70 +36,36 @@ def getTotalClicks():
 
     cnxn = getConnection()
     cursor = cnxn.cursor()
-
-    res = cursor.execute(f"""
-                        declare @latest datetime = (select max(clicked_date) from Events)
-                        select count(*),
-                            {grouping}
-                        from Events
-                        where clicked_date > dateadd(day, {-days}, @latest)
-                        group by {grouping}
-                        order by parse({grouping} as datetime) asc
-                        """).fetchall()
-
-    return jsonify(list(map(lambda x: {"period": x[1], "value": x[0]}, res)))
-
-@metrics.route("/api/metrics/conversionClicks", methods=["GET"])
-@cache.cached(timeout=1000, query_string=True)
-def getTotalConversion():
-    timeframe = request.args.get("timeframe").lower(
-    ) if request.args.get("timeframe") is not None else "day"
-    timeframe = timeframe if timeframe in ["day", "week", "month"] else "day"
-    days = 1 if timeframe == "day" else 7 if timeframe == "week" else 30
-    grouping = "format(clicked_date, 'hh tt')" if timeframe == "day"\
-        else "format(clicked_date, 'yyyy-MM-dd')" if timeframe == "week"\
-        else "format(clicked_date, 'yyyy-MM-dd')"
-
-    cnxn = getConnection()
-    cursor = cnxn.cursor()
-
-    res = cursor.execute(f"""
-                        declare @latest datetime = (select max(clicked_date) from Events)
-                        select count(*),
-                            {grouping}
-                        from Events
-                        where clicked_date > dateadd(day, {-days}, @latest) and event_name = 'conversion'
-                        group by {grouping}
-                        order by parse({grouping} as datetime) asc
-                        """).fetchall()
-
-    return jsonify(list(map(lambda x: {"period": x[1], "value": x[0]}, res)))
-
-@metrics.route("/api/metrics/shareClicks", methods=["GET"])
-@cache.cached(timeout=1000, query_string=True)
-def getTotalShares():
-    timeframe = request.args.get("timeframe").lower(
-    ) if request.args.get("timeframe") is not None else "day"
-    timeframe = timeframe if timeframe in ["day", "week", "month"] else "day"
-    days = 1 if timeframe == "day" else 7 if timeframe == "week" else 30
-    grouping = "format(clicked_date, 'hh tt')" if timeframe == "day"\
-        else "format(clicked_date, 'yyyy-MM-dd')" if timeframe == "week"\
-        else "format(clicked_date, 'yyyy-MM-dd')"
-
-    cnxn = getConnection()
-    cursor = cnxn.cursor()
-
-    res = cursor.execute(f"""
-                        declare @latest datetime = (select max(clicked_date) from Events)
-                        select count(*),
-                            {grouping}
-                        from Events
-                        where clicked_date > dateadd(day, {-days}, @latest) and event_name = 'share_experience'
-                        group by {grouping}
-                        order by parse({grouping} as datetime) asc
-                        """).fetchall()
-
-    return jsonify(list(map(lambda x: {"period": x[1], "value": x[0]}, res)))
+    
+    devices = ["Mobile", "Desktop"]
+    out = {}
+    for device in devices:
+        if event == "total":
+            res = cursor.execute(f"""
+                                declare @latest datetime = (select max(clicked_date) from Events)
+                                select count(*),
+                                    {grouping}
+                                from Events
+                                inner join Persons
+                                on Persons.person_id = Events.person_id
+                                where clicked_date > dateadd(day, {-days}, @latest) and Persons.device = '{device}'
+                                group by {grouping}
+                                order by parse({grouping} as datetime) asc
+                                """).fetchall()
+        else:
+            res = cursor.execute(f"""
+                                declare @latest datetime = (select max(clicked_date) from Events)
+                                select count(*),
+                                    {grouping}
+                                from Events
+                                inner join Persons
+                                on Persons.person_id = Events.person_id
+                                where clicked_date > dateadd(day, {-days}, @latest) and Persons.device = '{device}' and Events.event_name = '{event}'
+                                group by {grouping}
+                                order by parse({grouping} as datetime) asc
+                                """).fetchall()
+        out[device] = list(map(lambda x: {"period": x[1], "value": x[0]}, res))
+    return jsonify(out)
 
 @metrics.route("/api/metrics/average/<metric>", methods=["GET"])
 @cache.cached(timeout=1000, query_string=True)
