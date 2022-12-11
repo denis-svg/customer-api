@@ -62,3 +62,21 @@
     "Desktop" : [{"period": "12AM", "value":12}, {"period": "8AM", "value":13}]
 }
 ```
+#### /api/metrics/urls/top-products
+#### /api/metrics/urls/top-pages
+```json
+[
+{
+                            "url": 
+                            "uniqueClicks":
+                            "totalClicks": 
+                            "timeOnPageAvg": 
+                            "timeOnPageFilteredAvg": 
+                            "pageBeforeConversion": 
+                            "pageBeforeShare": 
+},
+{},
+{},
+...
+]
+```
