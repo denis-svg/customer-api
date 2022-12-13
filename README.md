@@ -80,6 +80,6 @@
 ]
 ```
 #### Example 
-### /api/metrics/totalConvers![Figure_3](https://user-images.githubusercontent.com/64483300/207277235-79dfa763-3050-45ff-8cd0-c85d2d6fa862.png)
-ions/device?timeframe=month
+### /api/metrics/totalConversions/device?timeframe=month
 ### /api/metrics/totalShares/device?timeframe=month
+![Figure_3](https://user-images.githubusercontent.com/64483300/207277235-79dfa763-3050-45ff-8cd0-c85d2d6fa862.png)
