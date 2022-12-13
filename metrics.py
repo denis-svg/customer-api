@@ -29,7 +29,7 @@ def getTotalClicksDevice(click_type: str):
     timeframe = request.args.get("timeframe").lower(
     ) if request.args.get("timeframe") is not None else "day"
     timeframe = timeframe if timeframe in ["day", "week", "month"] else "day"
-    days = 1 if timeframe == "day" else 7 if timeframe == "week" else 30
+    days = 30 if timeframe == "day" else 7 if timeframe == "week" else 30
     grouping = "format(clicked_date, 'hh tt')" if timeframe == "day"\
         else "format(clicked_date, 'yyyy-MM-dd')" if timeframe == "week"\
         else "format(clicked_date, 'yyyy-MM-dd')"
