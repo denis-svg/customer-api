@@ -79,6 +79,11 @@
 {},
 ]
 ```
+#### /api/metrics/urls/top-pages/month
+#### /api/metrics/urls/top-products/month
+![image](https://user-images.githubusercontent.com/64483300/207626371-00ef1fac-4c9c-4165-985f-74766bee793b.png)
+
+
 #### Example 
 ### /api/metrics/totalConversions/device?timeframe=month
 ### /api/metrics/totalShares/device?timeframe=month
