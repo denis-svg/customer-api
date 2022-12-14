@@ -264,3 +264,94 @@ def metricsProducts():
         cnxn.close()
         return jsonify(out)
 
+@metrics.route('/api/metrics/urls/top-pages/month', methods=['GET'])
+@cache.cached(timeout=1000, query_string=True)
+def metricsUrlsGruped():
+    if request.method == 'GET':
+
+        cnxn = getConnection()
+        cursor = cnxn.cursor()
+        days = cursor.execute(f"""SELECT timeframe
+                                FROM Urls_Test
+                                GROUP BY timeframe
+                                ORDER BY timeframe""").fetchall()
+        out = {}
+        for day in days:
+            print(day)
+            pages = cursor.execute(f"""SELECT   urL,
+                                                unique_clicks,
+                                                total_clicks,
+                                                timeOnPage,
+                                                timeOnPage_filtered,
+                                                pageBeforeConversion,
+                                                pageBeforeShare
+                                        FROM Urls_Test
+                                        WHERE format(timeframe, 'yyyy-MM-dd') = '{day[0]}' AND ratio_clicks < 1 AND ratio_time < (SELECT TOP(1)
+                                                                                        ratio_time
+                                                                                FROM Urls_Test
+                                                                                WHERE ratio_time IN (SELECT TOP(50) PERCENT
+                                                                                                            ratio_time
+                                                                                                    FROM Urls_Test
+                                                                                                    WHERE ratio_clicks < 1 AND ratio_time IS NOT NULL
+                                                                                                    ORDER BY ratio_time)
+                                                                                ORDER BY ratio_time DESC)
+                                        ORDER BY total_clicks DESC""").fetchall()
+
+            outDay = []
+            for page in pages:
+                outDay.append({"url": page[0],
+                            "uniqueClicks": page[1],
+                            "totalClicks": page[2],
+                            "timeOnPageAvg": page[3],
+                            "timeOnPageFilteredAvg": page[4],
+                            "pageBeforeConversion": page[5],
+                            "pageBeforeShare": page[6]})
+            out[f"""{day[0]}"""] = outDay[0:20]
+        cnxn.close()
+        return jsonify(out)
+
+@metrics.route('/api/metrics/urls/top-products/month', methods=['GET'])
+@cache.cached(timeout=1000, query_string=True)
+def metricsProductsGruped():
+    if request.method == 'GET':
+
+        cnxn = getConnection()
+        cursor = cnxn.cursor()
+        days = cursor.execute(f"""SELECT timeframe
+                                FROM Urls_Test
+                                GROUP BY timeframe
+                                ORDER BY timeframe""").fetchall()
+        out = {}
+        for day in days:
+            print(day)
+            pages = cursor.execute(f"""SELECT   urL,
+                                                unique_clicks,
+                                                total_clicks,
+                                                timeOnPage,
+                                                timeOnPage_filtered,
+                                                pageBeforeConversion,
+                                                pageBeforeShare
+                                        FROM Urls_Test
+                                        WHERE urL LIKE '%.html' AND format(timeframe, 'yyyy-MM-dd') = '{day[0]}' AND ratio_clicks < 1 AND ratio_time < (SELECT TOP(1)
+                                                                                        ratio_time
+                                                                                FROM Urls_Test
+                                                                                WHERE ratio_time IN (SELECT TOP(50) PERCENT
+                                                                                                            ratio_time
+                                                                                                    FROM Urls_Test
+                                                                                                    WHERE ratio_clicks < 1 AND ratio_time IS NOT NULL
+                                                                                                    ORDER BY ratio_time)
+                                                                                ORDER BY ratio_time DESC)
+                                        ORDER BY total_clicks DESC""").fetchall()
+
+            outDay = []
+            for page in pages:
+                outDay.append({"url": page[0],
+                            "uniqueClicks": page[1],
+                            "totalClicks": page[2],
+                            "timeOnPageAvg": page[3],
+                            "timeOnPageFilteredAvg": page[4],
+                            "pageBeforeConversion": page[5],
+                            "pageBeforeShare": page[6]})
+            out[f"""{day[0]}"""] = outDay[0:20]
+        cnxn.close()
+        return jsonify(out)
